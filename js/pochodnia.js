@@ -59,7 +59,7 @@ ${status}
 
 <span>Falownik</span>
 
-${Math.round(d.falownik/100)} Hz
+<b>${Math.round(d.falownik/100)} Hz
 
 </div>
 
