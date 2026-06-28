@@ -59,7 +59,7 @@ ${status}
 
 <span>Falownik</span>
 
-<b>${(d.falownik/100).toFixed(2).replace(".",",")} Hz</b>
+${Math.round(d.falownik/100)} Hz
 
 </div>
 
