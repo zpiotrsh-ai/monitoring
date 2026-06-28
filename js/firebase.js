@@ -4,13 +4,12 @@ import {
     getDatabase,
     ref,
     onValue
-}
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 
 const firebaseConfig = {
 
-    apiKey: "TWOJ_API_KEY",
+    apiKey: "AIzaSyDWF___qnu6xIVs1r_OMjRd7cWRfGq8tQo",
 
     authDomain: "zzo-gaz.firebaseapp.com",
 
@@ -26,9 +25,8 @@ const firebaseConfig = {
 
 };
 
+const app=initializeApp(firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
+const db=getDatabase(app);
 
-export const db = getDatabase(app);
-
-export {ref,onValue};
+export {db,ref,onValue};
