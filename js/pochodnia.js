@@ -1,50 +1,74 @@
 import {db,ref,onValue} from "./firebase.js";
 
-export function startPochodnia(){
+export function start(){
 
-    const r = ref(db,"rut200/stan_aktualny");
+    const dane=ref(db,"rut200/stan_aktualny");
 
-    onValue(r,(snapshot)=>{
+    onValue(dane,(snapshot)=>{
 
-        const d = snapshot.val();
+        const d=snapshot.val();
 
-        if(!d) return;
+        if(!d){
+
+            document.getElementById("app").innerHTML="Brak danych";
+
+            return;
+        }
 
         let status="🟢 ONLINE";
 
-        const age=(Date.now()-d.timestamp)/1000;
+        const wiek=(Date.now()-d.timestamp)/1000;
 
-        if(age>180)
+        if(wiek>180){
+
             status="🔴 OFFLINE";
-        else if(age>60)
+
+        }else if(wiek>60){
+
             status="🟡 BRAK AKTUALIZACJI";
+
+        }
 
         document.getElementById("app").innerHTML=`
 
 <div class="card">
 
-<h2>🔥 POCHODNIA</h2>
+<div class="status">
 
-<div class="status">${status}</div>
+${status}
 
-<div class="value">
+</div>
+
+<div class="row">
+
 <span>Temperatura</span>
+
 <b>${d.temperatura} °C</b>
+
 </div>
 
-<div class="value">
+<div class="row">
+
 <span>Podciśnienie</span>
+
 <b>${(d.podcisnienie/10).toFixed(1).replace(".",",")} mbar</b>
+
 </div>
 
-<div class="value">
+<div class="row">
+
 <span>Falownik</span>
+
 <b>${(d.falownik/100).toFixed(2).replace(".",",")} Hz</b>
+
 </div>
 
-<div class="value">
+<div class="row">
+
 <span>Aktualizacja</span>
+
 <b>${new Date(d.timestamp).toLocaleString("pl-PL")}</b>
+
 </div>
 
 </div>
