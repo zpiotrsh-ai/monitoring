@@ -1,3 +1,3 @@
-import {startPochodnia} from "./pochodnia.js";
+import {start} from "./pochodnia.js";
 
-startPochodnia();
+start();
