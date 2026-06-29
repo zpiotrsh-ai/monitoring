@@ -1,32 +1,51 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
-    getDatabase,
-    ref,
-    onValue
+  getDatabase,
+  ref,
+  onValue,
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
+  apiKey: "AIzaSyDWF___qnu6xIVs1r_OMjRd7cWRfGq8tQo",
 
-    apiKey: "AIzaSyDWF___qnu6xIVs1r_OMjRd7cWRfGq8tQo",
+  authDomain: "zzo-gaz.firebaseapp.com",
 
-    authDomain: "zzo-gaz.firebaseapp.com",
+  databaseURL: "https://zzo-gaz-default-rtdb.europe-west1.firebasedatabase.app",
 
-    databaseURL: "https://zzo-gaz-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "zzo-gaz",
 
-    projectId: "zzo-gaz",
+  storageBucket: "zzo-gaz.firebasestorage.app",
 
-    storageBucket: "zzo-gaz.firebasestorage.app",
+  messagingSenderId: "618331919683",
 
-    messagingSenderId: "618331919683",
-
-    appId: "1:618331919683:web:a9403b326e79bf819b0bf6"
-
+  appId: "1:618331919683:web:a9403b326e79bf819b0bf6",
 };
 
-const app=initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const db=getDatabase(app);
+const db = getDatabase(app);
+const firestore = getFirestore(app);
 
-export {db,ref,onValue};
+export {
+  db,
+  ref,
+  onValue,
+  firestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+};

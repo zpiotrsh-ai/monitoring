@@ -1,27 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
+    <title>Monitoring ZZO Gaz</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Material Symbols -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
 
-<title>Monitoring ZZO Gaz</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
 
-<link rel="stylesheet" href="css/style.css">
+  <body>
+    <!-- Tutaj aplikacja będzie budowana przez JavaScript -->
+    <div id="app">
+      <div class="loading">
+        <span class="material-symbols-outlined loading-icon">
+          progress_activity
+        </span>
 
-</head>
+        <h2>Monitoring ZZO Gaz</h2>
 
-<body>
+        <p>Łączenie z Firebase...</p>
+      </div>
+    </div>
 
-<h1>Monitoring ZZO Gaz</h1>
-
-<div id="app">
-Łączenie z Firebase...
-</div>
-
-<script type="module" src="js/app.js"></script>
-
-</body>
-
+    <!-- Główna aplikacja -->
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
