@@ -1,27 +1,36 @@
 export function renderDashboard() {
   return `
-
 <section class="dashboard">
 
+    <!-- POCHODNIA -->
     <div class="tile" id="tile-pochodnia">
 
-        <div class="icon">🔥</div>
+        <div class="tile-icon">🔥</div>
 
-        <h2>Pochodnia</h2>
+        <div class="tile-title">
+            Pochodnia
+        </div>
 
-        <p>Online</p>
+        <div id="flare-status" class="tile-content">
+
+            <div class="tile-value">
+                Ładowanie...
+            </div>
+
+        </div>
 
     </div>
 
+    <!-- POMPOWNIE -->
     <div class="tile" id="tile-pompownie">
 
-        <span class="material-symbols-outlined icon">
-            settings
-        </span>
+        <div class="tile-icon">⚙️</div>
 
-        <h2>Pompownie</h2>
+        <div class="tile-title">
+            Pompownie
+        </div>
 
-        <div id="pump-status">
+        <div id="pump-status" class="tile-content">
 
             Ładowanie...
 
@@ -29,29 +38,79 @@ export function renderDashboard() {
 
     </div>
 
+    <!-- OCZYSZCZALNIA -->
     <div class="tile" id="tile-oczyszczalnia">
 
-        <div class="icon">💧</div>
+        <div class="tile-icon">💧</div>
 
-        <h2>Oczyszczalnia</h2>
+        <div class="tile-title">
+            Oczyszczalnia
+        </div>
 
-        <p>Wkrótce...</p>
+        <div id="ocz-status" class="tile-content">
+
+            Ładowanie...
+
+        </div>
 
     </div>
 
-    <div class="tile" id="tile-elektro">
+    <!-- POMIARY -->
+    <div class="tile" id="tile-pomiary">
 
-        <div class="icon">🏭</div>
+        <div class="tile-icon">🧪</div>
 
-        <h2>Elektrociepłownia</h2>
+        <div class="tile-title">
+            Pomiary
+        </div>
 
-        <p>Wkrótce...</p>
+        <div id="gas-status" class="tile-content">
+
+            Brak danych
+
+        </div>
+
+    </div>
+
+    <!-- KALENDARZ -->
+    <div class="tile" id="tile-kalendarz">
+
+        <div class="tile-icon">📅</div>
+
+        <div class="tile-title">
+            Kalendarz
+        </div>
+
+        <div id="calendar-status" class="tile-content">
+
+            0 wydarzeń
+
+        </div>
+
+    </div>
+
+    <!-- EC -->
+    <div class="tile" id="tile-ec">
+
+        <div class="tile-icon">🏭</div>
+
+        <div class="tile-title">
+            EC
+        </div>
+
+        <div class="tile-content">
+
+            W budowie
+
+        </div>
 
     </div>
 
 </section>
 
-<div id="view"></div>
+<section id="view" class="view">
+
+</section>
 
 `;
 }
