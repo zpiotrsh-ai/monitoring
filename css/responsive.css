@@ -1,0 +1,130 @@
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+/* ---------- Laptop ---------- */
+
+@media (max-width: 1400px) {
+  .dashboard {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 1100px) {
+  .dashboard {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card-grid,
+  .pump-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ocz-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Mały tablet ---------- */
+
+@media (max-width: 850px) {
+  header {
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
+    gap: 12px;
+  }
+
+  header h1 {
+    font-size: 24px;
+  }
+
+  #clock {
+    font-size: 16px;
+  }
+
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panel {
+    margin: 18px;
+
+    padding: 22px;
+  }
+}
+
+/* ---------- Telefon ---------- */
+
+@media (max-width: 600px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid,
+  .pump-container {
+    grid-template-columns: 1fr;
+  }
+
+  .tile {
+    min-height: 150px;
+  }
+
+  .tile h3 {
+    font-size: 18px;
+  }
+
+  .tile-value {
+    font-size: 26px;
+  }
+
+  .panel {
+    margin: 12px;
+
+    padding: 18px;
+  }
+
+  .station-buttons {
+    flex-direction: column;
+  }
+
+  .station-btn {
+    width: 100%;
+  }
+}
+
+/* ---------- Bardzo mały telefon ---------- */
+
+@media (max-width: 400px) {
+  header {
+    padding: 18px;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  .panel {
+    margin: 8px;
+
+    padding: 14px;
+  }
+
+  .tile {
+    padding: 16px;
+  }
+
+  .tile-value {
+    font-size: 22px;
+  }
+
+  .card-title,
+  .pump-title {
+    font-size: 18px;
+  }
+}

@@ -8,19 +8,21 @@ import {
   getDocs,
 } from "../js/firebase.js";
 
+import { isView } from "../js/viewManager.js";
+
 const lista = ["Pompownia P3", "Pompownia P4", "Pompownia P2.1"];
 
 let pompownie = [];
 
 /* ---------------------------------
-   Pobranie ostatnich wpisów
+   Pobranie ostatniego wpisu
 ---------------------------------- */
 
 async function pobierzOstatni(nazwa) {
   const q = query(
     collection(firestore, "pomp_history"),
     where("pompownia_ref", "==", nazwa),
-    orderBy("datastamp", "desc"),
+    orderBy("data", "desc"),
     limit(1),
   );
 
@@ -55,12 +57,17 @@ export async function refreshPompownie() {
   pompownie = await Promise.all(
     lista.map(async (nazwa) => ({
       nazwa,
-
       dane: await pobierzOstatni(nazwa),
     })),
   );
 
   odswiezKafelek();
+
+  // Jeżeli użytkownik ogląda pompownie,
+  // odśwież również widok szczegółowy.
+  if (isView("pompownie")) {
+    renderPompownie();
+  }
 }
 
 /* ---------------------------------
@@ -75,20 +82,13 @@ function odswiezKafelek() {
   let alarm = 0;
 
   pompownie.forEach((p) => {
-    if (!p.dane) {
-      alarm++;
-
-      return;
-    }
-
-    if (!status(p.dane)) {
+    if (!p.dane || !status(p.dane)) {
       alarm++;
     }
   });
 
   if (alarm === 0) {
     tile.innerHTML = `
-
       <div class="tile-value">
         ${pompownie.length}/${pompownie.length}
       </div>
@@ -96,11 +96,9 @@ function odswiezKafelek() {
       <div class="tile-state">
         🟢 Wszystkie OK
       </div>
-
     `;
   } else {
     tile.innerHTML = `
-
       <div class="tile-value">
         ${alarm}
       </div>
@@ -108,7 +106,6 @@ function odswiezKafelek() {
       <div class="tile-state">
         🔴 Alarm
       </div>
-
     `;
   }
 }
@@ -123,84 +120,94 @@ export function renderPompownie() {
   if (!view) return;
 
   let html = `
-
 <div class="panel">
 
 <h2>⚙️ Pompownie</h2>
 
+<div class="pump-container">
 `;
 
   pompownie.forEach((p) => {
     if (!p.dane) {
       html += `
+<div class="pump-card">
 
-<div class="row">
+    <div class="pump-header">
 
-<span>${p.nazwa}</span>
+        <div class="pump-title">${p.nazwa}</div>
 
-<b>⚪ Brak danych</b>
+        <div class="pump-state pump-alarm">
+            ⚪ Brak danych
+        </div>
+
+    </div>
 
 </div>
-
 `;
-
       return;
     }
 
+    const ok = status(p.dane);
+
+    let data = "-";
+
+    if (p.dane.data) {
+      data =
+        typeof p.dane.data.toDate === "function"
+          ? p.dane.data.toDate()
+          : new Date(p.dane.data);
+
+      data = data.toLocaleString("pl-PL");
+    }
+
     html += `
+<div class="pump-card">
 
-<div class="row">
+<div class="pump-header">
 
-<span>${p.nazwa}</span>
+    <div class="pump-title">
+        ⚙️ ${p.nazwa}
+    </div>
 
-<b>${status(p.dane) ? "🟢 OK" : "🔴 ALARM"}</b>
-
-</div>
-
-<div class="row small">
-
-<span>Pompa 1</span>
-
-<b>${p.dane.p1ok ? "OK" : "Awaria"}</b>
+    <div class="pump-state ${ok ? "pump-ok" : "pump-alarm"}">
+        ${ok ? "🟢 OK" : "🔴 ALARM"}
+    </div>
 
 </div>
 
-<div class="row small">
+<div class="pump-grid">
 
-<span>Pompa 2</span>
+    <div class="pump-label">Tryb AUTO</div>
+    <div class="pump-value">${p.dane.auto ? "TAK" : "NIE"}</div>
 
-<b>${p.dane.p2ok ? "OK" : "Awaria"}</b>
+    <div class="pump-label">Pompa 1</div>
+    <div class="pump-value">${p.dane.p1ok ? "OK" : "AWARIA"}</div>
 
-</div>
-
-<div class="row small">
-
-<span>Auto</span>
-
-<b>${p.dane.auto ? "Tak" : "Nie"}</b>
-
-</div>
-
+    <div class="pump-label">Pompa 2</div>
+    <div class="pump-value">${p.dane.p2ok ? "OK" : "AWARIA"}</div>
 `;
 
     if (p.dane.flow !== undefined) {
       html += `
-
-<div class="row small">
-
-<span>Przepływ</span>
-
-<b>${Number(p.dane.flow).toFixed(1)} m³/h</b>
-
-</div>
-
+    <div class="pump-label">Przepływ</div>
+    <div class="pump-value">${Number(p.dane.flow).toLocaleString("pl-PL")} m³</div>
 `;
     }
 
-    html += "<hr>";
+    html += `
+    <div class="pump-label">Odczyt</div>
+    <div class="pump-value">${data}</div>
+
+</div>
+
+</div>
+`;
   });
 
-  html += "</div>";
+  html += `
+</div>
+</div>
+`;
 
   view.innerHTML = html;
 }

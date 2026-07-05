@@ -1,0 +1,194 @@
+/* ==========================================================
+   POMIARY GAZU
+========================================================== */
+
+.filters {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0 30px;
+  flex-wrap: wrap;
+}
+
+.filters select {
+  min-width: 220px;
+
+  padding: 12px 16px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  background: #fff;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.filters select:hover {
+  border-color: var(--blue);
+}
+
+.filters select:focus {
+  outline: none;
+
+  border-color: var(--blue);
+
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ---------- Lista ---------- */
+
+.measure-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+/* ---------- Karta ---------- */
+
+.measure-card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  box-shadow: var(--shadow);
+
+  border-left: 6px solid var(--blue);
+
+  transition: 0.2s;
+}
+
+.measure-card:hover {
+  transform: translateY(-2px);
+}
+
+.measure-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  margin-bottom: 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  padding-bottom: 14px;
+}
+
+.measure-header b {
+  font-size: 20px;
+}
+
+.measure-header span {
+  color: var(--muted);
+}
+
+.measure-header div:last-child {
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+/* ---------- Dane ---------- */
+
+.measure-grid {
+  display: grid;
+
+  grid-template-columns: 160px auto;
+
+  row-gap: 10px;
+
+  column-gap: 20px;
+}
+
+.measure-grid div:nth-child(odd) {
+  color: var(--muted);
+}
+
+.measure-grid div:nth-child(even) {
+  font-weight: 600;
+}
+
+/* ---------- Alarmy ---------- */
+
+.value-ok {
+  color: var(--green);
+
+  font-weight: 700;
+}
+
+.value-warning {
+  color: var(--yellow);
+
+  font-weight: 700;
+}
+
+.value-alarm {
+  color: var(--red);
+
+  font-weight: 700;
+}
+
+/* ---------- Dashboard ---------- */
+
+.measure-line {
+  margin-bottom: 14px;
+}
+
+.measure-line:last-child {
+  margin-bottom: 0;
+}
+
+.measure-title {
+  font-size: 14px;
+
+  font-weight: 700;
+
+  margin-bottom: 4px;
+}
+
+.measure-values {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  font-size: 13px;
+
+  color: #555;
+}
+
+.measure-values b {
+  color: #111;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .measure-header {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .measure-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters select {
+    width: 100%;
+  }
+}

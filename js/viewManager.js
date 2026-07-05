@@ -1,13 +1,13 @@
 let activeView = "pochodnia";
 
-export function setView(name) {
-  activeView = name;
+export function setView(view) {
+  activeView = view;
 }
 
 export function getView() {
   return activeView;
 }
 
-export function isView(name) {
-  return activeView === name;
+export function isView(view) {
+  return activeView === view;
 }

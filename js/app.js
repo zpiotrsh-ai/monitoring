@@ -1,10 +1,14 @@
 import { renderHeader } from "../components/header.js";
 import { renderDashboard } from "../components/dashboard.js";
 
+import { setView } from "./viewManager.js";
+
+import { start, pokazWidokPochodni } from "../modules/pochodnia.js";
+
 import {
-  start as startPochodnia,
-  pokazWidokPochodni,
-} from "../modules/pochodnia.js";
+  startOczyszczalnia,
+  pokazWidokOczyszczalni,
+} from "../modules/oczyszczalnia.js";
 
 import {
   startPompownie,
@@ -12,13 +16,11 @@ import {
   renderPompownie,
 } from "../modules/pompownie.js";
 
-import {
-  startOczyszczalnia,
-  pokazWidokOczyszczalni,
-} from "../modules/oczyszczalnia.js";
+import { startPomiary, pokazWidokPomiary } from "../modules/pomiary.js";
 
-import { pokazWidokPomiary } from "../modules/pomiary.js";
 import { pokazWidokKalendarz } from "../modules/kalendarz.js";
+
+import "./test_supabase.js";
 
 const app = document.getElementById("app");
 
@@ -27,49 +29,78 @@ app.innerHTML = `
     ${renderDashboard()}
 `;
 
-/* -----------------------------
-   Uruchomienie modułów
------------------------------- */
+/* ===================================
+   Start modułów
+=================================== */
 
-startPochodnia();
-
-// await startPompownie();
-
+start();
 startOczyszczalnia();
+await startPompownie();
+await startPomiary();
 
-/* -----------------------------
-   Dashboard
------------------------------- */
+/* ===================================
+   Pochodnia
+=================================== */
 
-document
-  .getElementById("tile-pochodnia")
-  .addEventListener("click", pokazWidokPochodni);
+document.getElementById("tile-pochodnia").addEventListener("click", () => {
+  setView("pochodnia");
+
+  pokazWidokPochodni();
+});
+
+/* ===================================
+   Pompownie
+=================================== */
 
 document
   .getElementById("tile-pompownie")
-  .addEventListener("click", renderPompownie);
+  .addEventListener("click", async () => {
+    setView("pompownie");
 
-document
-  .getElementById("tile-oczyszczalnia")
-  .addEventListener("click", pokazWidokOczyszczalni);
+    await refreshPompownie();
 
-document
-  .getElementById("tile-pomiary")
-  .addEventListener("click", pokazWidokPomiary);
+    renderPompownie();
+  });
 
-document
-  .getElementById("tile-kalendarz")
-  .addEventListener("click", pokazWidokKalendarz);
+/* ===================================
+   Oczyszczalnia
+=================================== */
 
-/* -----------------------------
-   Timery
------------------------------- */
+document.getElementById("tile-oczyszczalnia").addEventListener("click", () => {
+  setView("oczyszczalnia");
+
+  pokazWidokOczyszczalni();
+});
+
+/* ===================================
+   Pomiary
+=================================== */
+
+document.getElementById("tile-pomiary").addEventListener("click", () => {
+  setView("pomiary");
+
+  pokazWidokPomiary();
+});
+
+/* ===================================
+   Kalendarz
+=================================== */
+
+document.getElementById("tile-kalendarz").addEventListener("click", () => {
+  setView("kalendarz");
+
+  pokazWidokKalendarz();
+});
+
+/* ===================================
+   Auto refresh pompowni
+=================================== */
 
 setInterval(refreshPompownie, 15000);
 
-/* -----------------------------
+/* ===================================
    Zegar
------------------------------- */
+=================================== */
 
 function updateClock() {
   const clock = document.getElementById("clock");
@@ -82,9 +113,3 @@ function updateClock() {
 updateClock();
 
 setInterval(updateClock, 1000);
-
-/* -----------------------------
-   Domyślny ekran
------------------------------- */
-
-pokazWidokPochodni();

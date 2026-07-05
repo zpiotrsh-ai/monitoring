@@ -1,5 +1,5 @@
 import { db, ref, onValue } from "../js/firebase.js";
-import { setView, isView } from "../js/viewManager.js";
+import { isView } from "../js/viewManager.js";
 
 let danePochodni = null;
 
@@ -15,7 +15,7 @@ export function start() {
 
     odswiezKafelek();
 
-    // Odśwież widok tylko jeśli jest aktywny
+    // Odświeżaj tylko jeśli aktualnie oglądamy pochodnię
     if (isView("pochodnia")) {
       render();
     }
@@ -61,7 +61,6 @@ function odswiezKafelek() {
 ---------------------------------- */
 
 export function pokazWidokPochodni() {
-  setView("pochodnia");
   render();
 }
 
@@ -87,35 +86,35 @@ function render() {
   }
 
   view.innerHTML = `
-    <div class="panel">
+<div class="panel">
 
-      <h2>🔥 Pochodnia</h2>
+<h2>🔥 Pochodnia</h2>
 
-      <div class="row">
-        <span>Status</span>
-        <b>${status}</b>
-      </div>
+<div class="row">
+    <span>Status</span>
+    <b>${status}</b>
+</div>
 
-      <div class="row">
-        <span>Temperatura</span>
-        <b>${Math.round(danePochodni.temperatura)} °C</b>
-      </div>
+<div class="row">
+    <span>Temperatura</span>
+    <b>${danePochodni.temperatura} °C</b>
+</div>
 
-      <div class="row">
-        <span>Podciśnienie</span>
-        <b>${(danePochodni.podcisnienie / 10).toFixed(1)} mbar</b>
-      </div>
+<div class="row">
+    <span>Podciśnienie</span>
+    <b>${(danePochodni.podcisnienie / 10).toFixed(1)} mbar</b>
+</div>
 
-      <div class="row">
-        <span>Falownik</span>
-        <b>${Math.round(danePochodni.falownik / 100)} Hz</b>
-      </div>
+<div class="row">
+    <span>Falownik</span>
+    <b>${Math.round(danePochodni.falownik / 100)} Hz</b>
+</div>
 
-      <div class="row">
-        <span>Aktualizacja</span>
-        <b>${new Date(danePochodni.timestamp).toLocaleString("pl-PL")}</b>
-      </div>
+<div class="row">
+    <span>Aktualizacja</span>
+    <b>${new Date(danePochodni.timestamp).toLocaleString("pl-PL")}</b>
+</div>
 
-    </div>
-  `;
+</div>
+`;
 }

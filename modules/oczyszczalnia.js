@@ -1,11 +1,11 @@
 import { db, ref, onValue } from "../js/firebase.js";
-import { setView, isView } from "../js/viewManager.js";
+import { isView } from "../js/viewManager.js";
 
 let dane = null;
 
-// ===============================
-// START
-// ===============================
+/* ---------------------------------
+   Start - RTDB
+---------------------------------- */
 
 export function startOczyszczalnia() {
   const daneRef = ref(db, "rut200/stan_nodered");
@@ -13,122 +13,120 @@ export function startOczyszczalnia() {
   onValue(daneRef, (snapshot) => {
     dane = snapshot.val();
 
-    aktualizujKafelek();
+    odswiezKafelek();
 
+    // Odśwież widok tylko jeśli jest aktywny
     if (isView("oczyszczalnia")) {
       render();
     }
   });
 }
 
-// ===============================
-// KAFELEK
-// ===============================
+/* ---------------------------------
+   Dashboard
+---------------------------------- */
 
-function aktualizujKafelek() {
-  const pole = document.getElementById("ocz-status");
+function odswiezKafelek() {
+  const tile = document.getElementById("ocz-status");
 
-  if (!pole) return;
+  if (!tile || !dane) return;
 
-  if (!dane) {
-    pole.innerHTML = "Brak danych";
-    return;
-  }
+  tile.innerHTML = `
+    <div class="tile-value">
+      ${Number(dane.NIRZA28021).toFixed(1)}
+    </div>
 
-  pole.innerHTML = `
-      <div class="status ok">ONLINE</div>
+    <div class="tile-small">
+      µS/cm
+    </div>
 
-      <div>${dane.PIRZA16221.toFixed(1)} bar</div>
-
-      <div>Przew. II ${Math.round(dane.NIRZA28021)} µS</div>
+    <div class="tile-state">
+      🟢 ONLINE
+    </div>
   `;
 }
 
-// ===============================
-// OTWARCIE WIDOKU
-// ===============================
+/* ---------------------------------
+   Kliknięcie
+---------------------------------- */
 
 export function pokazWidokOczyszczalni() {
-  setView("oczyszczalnia");
-
   render();
 }
 
-// ===============================
-// RENDER
-// ===============================
+/* ---------------------------------
+   Render
+---------------------------------- */
 
 function render() {
+  if (!dane) return;
+
   const view = document.getElementById("view");
 
   if (!view) return;
 
-  if (!dane) {
-    view.innerHTML = `
-      <div class="panel">
-          <h2>💧 Oczyszczalnia</h2>
-          <p>Brak danych...</p>
-      </div>
-    `;
-    return;
-  }
-
   view.innerHTML = `
+
 <div class="panel">
 
 <h2>💧 Oczyszczalnia</h2>
 
-<div class="ocz-grid">
+<div class="pump-container">
 
-<div class="ocz-column">
+    <div class="pump-card">
 
-<h3>Stopień I</h3>
+        <div class="pump-header">
 
-<div class="ocz-row">
-<span>Ciśnienie</span>
-<b>${dane.PIRZA16221.toFixed(1)} bar</b>
-</div>
+            <div class="pump-title">
+                I stopień
+            </div>
 
-<div class="ocz-row">
-<span>Przepływ</span>
-<b>${dane.FIRCA18021.toFixed(2)} m³/h</b>
-</div>
+        </div>
 
-<div class="ocz-row">
-<span>Przewodność</span>
-<b>${Math.round(dane.NIRZA18021)} µS</b>
-</div>
+        <div class="pump-grid">
 
-<div class="ocz-row">
-<span>DP</span>
-<b>${dane.DP.toFixed(1)} bar</b>
-</div>
+    <div class="pump-label">Ciśnienie</div>
+<div class="pump-value">${Number(dane.PIRZA16221).toFixed(2).replace(".", ",")} bar</div>
 
-</div>
+    <div class="pump-label">Przepływ</div>
+    <div class="pump-value">${Number(dane.FIRCA18021).toFixed(2)} m³/h</div>
 
-<div class="ocz-column">
+    <div class="pump-label">Przewodność</div>
+    <div class="pump-value">${Number(dane.NIRZA18021).toFixed(0)} µS/cm</div>
 
-<h3>Stopień II</h3>
-
-<div class="ocz-row">
-<span>Ciśnienie</span>
-<b>${dane.PIRZA26021.toFixed(1)} bar</b>
-</div>
-
-<div class="ocz-row">
-<span>Przepływ</span>
-<b>${dane.FIRCA28021.toFixed(2)} m³/h</b>
-</div>
-
-<div class="ocz-row">
-<span>Przewodność</span>
-<b>${Math.round(dane.NIRZA28021)} µS</b>
-</div>
+    <div class="pump-label">ΔP</div>
+    <div class="pump-value">${Number(dane.DP).toFixed(2)} bar</div>
 
 </div>
 
-</div>
+    </div>
+
+    <div class="pump-card">
+
+        <div class="pump-header">
+
+            <div class="pump-title">
+                II stopień
+            </div>
+
+        </div>
+
+        <div class="pump-grid">
+
+    <div class="pump-label">Ciśnienie</div>
+<div class="pump-value">${Number(dane.PIRZA26021).toFixed(2).replace(".", ",")} bar</div>
+
+    <div class="pump-label">Przepływ</div>
+    <div class="pump-value">${Number(dane.FIRCA28021).toFixed(2)} m³/h</div>
+
+    <div class="pump-label">Przewodność</div>
+    <div class="pump-value">${Number(dane.NIRZA28021).toFixed(0)} µS/cm</div>
 
 </div>
+
+    </div>
+
+</div>
+
 `;
 }
