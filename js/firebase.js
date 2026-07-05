@@ -15,6 +15,7 @@ import {
   limit,
   getDocs,
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWF___qnu6xIVs1r_OMjRd7cWRfGq8tQo",
@@ -36,6 +37,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
 const firestore = getFirestore(app);
+const auth = getAuth(app);
 
 export {
   db,
@@ -48,4 +50,5 @@ export {
   orderBy,
   limit,
   getDocs,
+  auth,
 };

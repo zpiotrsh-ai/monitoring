@@ -2,3 +2,174 @@
 @import url("./dashboard.css");
 @import url("./cards.css");
 @import url("./responsive.css");
+/* ==========================================================
+   LOGIN
+========================================================== */
+
+.login-page {
+  min-height: 100vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: var(--bg);
+}
+
+.login-card {
+  width: 420px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  box-shadow: var(--shadow);
+
+  padding: 40px;
+}
+
+.login-card h1 {
+  text-align: center;
+
+  margin-bottom: 10px;
+}
+
+.login-subtitle {
+  text-align: center;
+
+  color: var(--muted);
+
+  margin-bottom: 30px;
+}
+
+.login-card input {
+  width: 100%;
+
+  padding: 14px;
+
+  margin-bottom: 15px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  font-size: 16px;
+}
+
+.login-card input:focus {
+  outline: none;
+
+  border-color: var(--blue);
+}
+
+.login-card button {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: var(--blue);
+
+  color: white;
+
+  font-size: 16px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.login-card button:hover {
+  opacity: 0.9;
+}
+
+.login-error {
+  margin-top: 15px;
+
+  color: var(--red);
+
+  text-align: center;
+
+  min-height: 20px;
+}
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.header-right {
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+}
+
+.user-info {
+  color: white;
+
+  font-size: 15px;
+
+  opacity: 0.9;
+}
+
+.logout-btn {
+  background: #ef4444;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 10px 16px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+.login-field {
+  position: relative;
+
+  margin-bottom: 15px;
+}
+
+.login-field input {
+  width: 100%;
+
+  padding: 14px;
+
+  padding-right: 50px;
+}
+
+.toggle-password {
+  position: absolute;
+
+  right: 15px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  cursor: pointer;
+
+  user-select: none;
+
+  font-size: 20px;
+
+  opacity: 0.6;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}

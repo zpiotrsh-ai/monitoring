@@ -94,7 +94,7 @@ function odswiezKafelek() {
       </div>
 
       <div class="tile-state">
-        🟢 Wszystkie OK
+        🟢 OK
       </div>
     `;
   } else {

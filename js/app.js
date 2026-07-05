@@ -1,6 +1,9 @@
 import { renderHeader } from "../components/header.js";
 import { renderDashboard } from "../components/dashboard.js";
 
+import { renderLogin } from "./login.js";
+import { login, checkAuth, logout } from "./auth.js";
+
 import { setView } from "./viewManager.js";
 
 import { start, pokazWidokPochodni } from "../modules/pochodnia.js";
@@ -20,96 +23,148 @@ import { startPomiary, pokazWidokPomiary } from "../modules/pomiary.js";
 
 import { pokazWidokKalendarz } from "../modules/kalendarz.js";
 
-import "./test_supabase.js";
-
 const app = document.getElementById("app");
 
-app.innerHTML = `
-    ${renderHeader()}
-    ${renderDashboard()}
-`;
-
 /* ===================================
-   Start modułów
+   START
 =================================== */
 
-start();
-startOczyszczalnia();
-await startPompownie();
-await startPomiary();
-
-/* ===================================
-   Pochodnia
-=================================== */
-
-document.getElementById("tile-pochodnia").addEventListener("click", () => {
-  setView("pochodnia");
-
-  pokazWidokPochodni();
+checkAuth((user) => {
+  if (user) {
+    uruchomAplikacje();
+  } else {
+    pokazLogowanie();
+  }
 });
 
 /* ===================================
-   Pompownie
+   LOGOWANIE
 =================================== */
 
-document
-  .getElementById("tile-pompownie")
-  .addEventListener("click", async () => {
-    setView("pompownie");
+function pokazLogowanie() {
+  app.innerHTML = renderLogin();
 
-    await refreshPompownie();
+  const password = document.getElementById("login-password");
 
-    renderPompownie();
+  document.getElementById("toggle-password").addEventListener("click", () => {
+    password.type = password.type === "password" ? "text" : "password";
   });
 
-/* ===================================
-   Oczyszczalnia
-=================================== */
+  const loginEnter = async () => {
+    const button = document.getElementById("login-button");
 
-document.getElementById("tile-oczyszczalnia").addEventListener("click", () => {
-  setView("oczyszczalnia");
+    button.disabled = true;
+    button.textContent = "Logowanie...";
 
-  pokazWidokOczyszczalni();
-});
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
 
-/* ===================================
-   Pomiary
-=================================== */
+    const error = await login(email, password);
 
-document.getElementById("tile-pomiary").addEventListener("click", () => {
-  setView("pomiary");
+    if (error) {
+      document.getElementById("login-error").textContent = error;
 
-  pokazWidokPomiary();
-});
+      button.disabled = false;
+      button.textContent = "Zaloguj";
+    }
+  };
 
-/* ===================================
-   Kalendarz
-=================================== */
+  document.getElementById("login-button").addEventListener("click", loginEnter);
 
-document.getElementById("tile-kalendarz").addEventListener("click", () => {
-  setView("kalendarz");
+  document.getElementById("login-email").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loginEnter();
+  });
 
-  pokazWidokKalendarz();
-});
-
-/* ===================================
-   Auto refresh pompowni
-=================================== */
-
-setInterval(refreshPompownie, 15000);
-
-/* ===================================
-   Zegar
-=================================== */
-
-function updateClock() {
-  const clock = document.getElementById("clock");
-
-  if (!clock) return;
-
-  clock.textContent = new Date().toLocaleString("pl-PL");
+  document.getElementById("login-password").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loginEnter();
+  });
 }
 
-updateClock();
+/* ===================================
+   APLIKACJA
+=================================== */
 
-setInterval(updateClock, 1000);
+async function uruchomAplikacje() {
+  app.innerHTML = `
+        ${renderHeader()}
+        ${renderDashboard()}
+    `;
+  document
+    .getElementById("logout-button")
+    .addEventListener("click", async () => {
+      await logout();
+    });
+  /* ----- start modułów ----- */
+
+  start();
+
+  startOczyszczalnia();
+
+  await startPompownie();
+
+  await startPomiary();
+
+  /* ----- pochodnia ----- */
+
+  document.getElementById("tile-pochodnia").addEventListener("click", () => {
+    setView("pochodnia");
+
+    pokazWidokPochodni();
+  });
+
+  /* ----- pompownie ----- */
+
+  document
+    .getElementById("tile-pompownie")
+    .addEventListener("click", async () => {
+      setView("pompownie");
+
+      await refreshPompownie();
+
+      renderPompownie();
+    });
+
+  /* ----- oczyszczalnia ----- */
+
+  document
+    .getElementById("tile-oczyszczalnia")
+    .addEventListener("click", () => {
+      setView("oczyszczalnia");
+
+      pokazWidokOczyszczalni();
+    });
+
+  /* ----- pomiary ----- */
+
+  document.getElementById("tile-pomiary").addEventListener("click", () => {
+    setView("pomiary");
+
+    pokazWidokPomiary();
+  });
+
+  /* ----- kalendarz ----- */
+
+  document.getElementById("tile-kalendarz").addEventListener("click", () => {
+    setView("kalendarz");
+
+    pokazWidokKalendarz();
+  });
+
+  /* ----- auto refresh ----- */
+
+  setInterval(refreshPompownie, 15000);
+
+  /* ----- zegar ----- */
+
+  function updateClock() {
+    const clock = document.getElementById("clock");
+
+    if (!clock) return;
+
+    clock.textContent = new Date().toLocaleString("pl-PL");
+  }
+
+  updateClock();
+
+  setInterval(updateClock, 1000);
+}
