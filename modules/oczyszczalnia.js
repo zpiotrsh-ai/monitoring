@@ -41,7 +41,7 @@ function odswiezKafelek() {
     </div>
 
     <div class="tile-state">
-      🟢 ONLINE
+      🔴 OFFLINE
     </div>
   `;
 }
