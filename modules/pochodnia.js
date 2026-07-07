@@ -31,7 +31,7 @@ function odswiezKafelek() {
 
   if (!tile || !danePochodni) return;
 
-  let status = "🟢";
+  let status = "🟢 ONLINE";
 
   const wiek = (Date.now() - danePochodni.timestamp) / 1000;
 

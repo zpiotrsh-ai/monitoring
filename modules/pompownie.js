@@ -8,7 +8,9 @@ import {
   getDocs,
 } from "../js/firebase.js";
 
-import { isView } from "../js/viewManager.js";
+import { pokazWidokPompPrzeglady } from "./pompprzeglady.js";
+import { pokazWidokPompPrzeplyw } from "./pompprzeplyw.js";
+import { isView, setView } from "../js/viewManager.js";
 
 const lista = ["Pompownia P3", "Pompownia P4", "Pompownia P2.1"];
 
@@ -124,6 +126,42 @@ export function renderPompownie() {
 
 <h2>⚙️ Pompownie</h2>
 
+<div class="pump-menu">
+
+<div
+class="menu-card"
+id="menu-przeglady">
+
+<div class="menu-title">
+📋 Historia przeglądów
+</div>
+
+<div class="menu-desc">
+
+Historia wszystkich przeglądów pompowni
+
+</div>
+
+</div>
+
+<div
+class="menu-card"
+id="menu-przeplyw">
+
+<div class="menu-title">
+🌊 Przepływ P4
+</div>
+
+<div class="menu-desc">
+
+Historia licznika przepływu
+
+</div>
+
+</div>
+
+</div>
+
 <div class="pump-container">
 `;
 
@@ -210,4 +248,14 @@ export function renderPompownie() {
 `;
 
   view.innerHTML = html;
+
+  document.getElementById("menu-przeglady").addEventListener("click", () => {
+    setView("pompprzeglady");
+    pokazWidokPompPrzeglady();
+  });
+
+  document.getElementById("menu-przeplyw").addEventListener("click", () => {
+    setView("pompprzeplyw");
+    pokazWidokPompPrzeplyw();
+  });
 }
