@@ -179,9 +179,9 @@ value="${filtrDo}">
 
 <th>Data</th>
 
-<th>Licznik</th>
+<th class="num">Licznik</th>
 
-<th>Przyrost</th>
+<th class="num">Przyrost</th>
 
 <th>Uwagi</th>
 
@@ -198,13 +198,13 @@ value="${filtrDo}">
     const data =
       typeof p.data?.toDate === "function" ? p.data.toDate() : new Date(p.data);
 
-    const dataTxt = data.toLocaleDateString("pl-PL");
-
-    const godzina = data.toLocaleTimeString("pl-PL", {
+    const dataTxt = data.toLocaleString("pl-PL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-
     let przyrost = "—";
 
     if (i > 0) {
@@ -215,17 +215,7 @@ value="${filtrDo}">
 
 <tr>
 
-<td>
-
-${dataTxt}<br>
-
-<span class="time">
-
-${godzina}
-
-</span>
-
-</td>
+<td>${dataTxt}</td>
 
 <td style="text-align:right">
 

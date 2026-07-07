@@ -228,3 +228,18 @@
 
   cursor: default;
 }
+
+/* ===========================
+   Tabele
+=========================== */
+
+.review-table th.num,
+.review-table td.num {
+  text-align: right;
+
+  white-space: nowrap;
+}
+
+.review-table td {
+  vertical-align: middle;
+}
