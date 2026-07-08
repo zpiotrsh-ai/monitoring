@@ -6,11 +6,13 @@ import {
   getDocs,
 } from "../js/firebase.js";
 import { setView } from "../js/viewManager.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 let historia = [];
 let filtrOd = "";
 let filtrDo = "";
 let filtrPompownia = "";
+let listaFiltrowana = [];
 
 /* ===================================
    START
@@ -35,6 +37,26 @@ async function pobierzHistorie() {
   const snap = await getDocs(q);
 
   historia = snap.docs.map((d) => d.data());
+}
+
+function pobierzListeFiltrowana() {
+  return historia.filter((p) => {
+    const data =
+      typeof p.data?.toDate === "function" ? p.data.toDate() : new Date(p.data);
+
+    if (filtrOd && data < new Date(filtrOd)) return false;
+
+    if (filtrDo) {
+      const d = new Date(filtrDo);
+      d.setHours(23, 59, 59, 999);
+
+      if (data > d) return false;
+    }
+
+    if (filtrPompownia && p.pompownia_ref !== filtrPompownia) return false;
+
+    return true;
+  });
 }
 
 /* ===================================
@@ -103,6 +125,11 @@ ${p}
 
 </label>
 
+<div style="flex:1"></div>
+<button id="review-export">
+    📥 Excel
+</button>
+
 </div>
 
 <table class="review-table">
@@ -132,34 +159,11 @@ ${p}
 <tbody>
 `;
 
-  historia
-    .filter((p) => {
-      let data =
-        typeof p.data?.toDate === "function"
-          ? p.data.toDate()
-          : new Date(p.data);
+  pobierzListeFiltrowana().forEach((p) => {
+    const data =
+      typeof p.data?.toDate === "function" ? p.data.toDate() : new Date(p.data);
 
-      if (filtrOd && data < new Date(filtrOd)) return false;
-
-      if (filtrDo) {
-        const d = new Date(filtrDo);
-
-        d.setHours(23, 59, 59, 999);
-
-        if (data > d) return false;
-      }
-
-      if (filtrPompownia && p.pompownia_ref !== filtrPompownia) return false;
-
-      return true;
-    })
-    .forEach((p) => {
-      const data =
-        typeof p.data?.toDate === "function"
-          ? p.data.toDate()
-          : new Date(p.data);
-
-      html += `
+    html += `
 
 <tr>
 
@@ -210,7 +214,7 @@ ${p.uwagi ?? "—"}
 </tr>
 
 `;
-    });
+  });
 
   html += `
 
@@ -241,4 +245,40 @@ ${p.uwagi ?? "—"}
 
     render();
   });
+  document
+    .getElementById("review-export")
+    .addEventListener("click", eksportExcel);
+}
+function eksportExcel() {
+  const dane = pobierzListeFiltrowana().map((p) => {
+    const data =
+      typeof p.data?.toDate === "function" ? p.data.toDate() : new Date(p.data);
+
+    return {
+      Data: data.toLocaleString("pl-PL"),
+
+      Pompownia: p.pompownia_ref,
+
+      "Pompa 1": p.p1ok ? "OK" : "AWARIA",
+
+      "Pompa 2": p.p2ok ? "OK" : "AWARIA",
+
+      AUTO: p.auto ? "TAK" : "NIE",
+
+      Przepływ: p.flow ?? "",
+
+      Uwagi: p.uwagi ?? "",
+    };
+  });
+
+  const wb = XLSX.utils.book_new();
+
+  const ws = XLSX.utils.json_to_sheet(dane);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Przeglądy");
+
+  XLSX.writeFile(
+    wb,
+    `Historia_przegladow_${new Date().toISOString().slice(0, 10)}.xlsx`,
+  );
 }

@@ -1,11 +1,12 @@
 import { supabase } from "../js/supabase.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 let pomiary = [];
-
 let widokAktywny = false;
-
 let filtrStacja = "";
 let filtrKomin = "";
+let filtrOd = "";
+let filtrDo = "";
 
 /* ===================================
    START
@@ -87,6 +88,59 @@ export function pokazWidokPomiary() {
   render();
 }
 
+function pobierzListeFiltrowana() {
+  return pomiary
+    .filter((p) => {
+      const data = new Date(p.data);
+
+      if (filtrOd && data < new Date(filtrOd)) return false;
+
+      if (filtrDo) {
+        const d = new Date(filtrDo);
+        d.setHours(23, 59, 59, 999);
+
+        if (data > d) return false;
+      }
+
+      return true;
+    })
+    .filter((p) => !filtrStacja || p.stacja_nazwa === filtrStacja)
+    .filter((p) => !filtrKomin || p.komin_nazwa === filtrKomin);
+}
+
+function eksportExcel() {
+  const dane = pobierzListeFiltrowana().map((p) => ({
+    Data: new Date(p.data).toLocaleString("pl-PL"),
+
+    Stacja: p.stacja_nazwa,
+
+    Komin: p.komin_nazwa,
+
+    CH4: Number(p.CH4),
+
+    CO2: Number(p.CO2),
+
+    O2: Number(p.O2),
+
+    H2S: Number(p.H2S),
+
+    N2: Number(p.N),
+
+    Zawor: p.zawór,
+  }));
+
+  const wb = XLSX.utils.book_new();
+
+  const ws = XLSX.utils.json_to_sheet(dane);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Pomiary");
+
+  XLSX.writeFile(
+    wb,
+    `Pomiary_gazu_${new Date().toISOString().slice(0, 10)}.xlsx`,
+  );
+}
+
 /* ===================================
    RENDER
 =================================== */
@@ -98,13 +152,11 @@ function render() {
 
   const stacje = [...new Set(pomiary.map((p) => p.stacja_nazwa))].sort();
 
-  const kominy = [
-    ...new Set(
-      pomiary
-        .filter((p) => !filtrStacja || p.stacja_nazwa === filtrStacja)
-        .map((p) => p.komin_nazwa),
-    ),
-  ].sort();
+  const daneStacji = filtrStacja
+    ? pomiary.filter((p) => p.stacja_nazwa === filtrStacja)
+    : pomiary;
+
+  const kominy = [...new Set(daneStacji.map((p) => p.komin_nazwa))].sort();
 
   let html = `
 
@@ -113,6 +165,28 @@ function render() {
 <h2>🧪 Historia pomiarów gazu</h2>
 
 <div class="filters">
+
+<label>
+
+Od
+
+<input
+type="date"
+id="filtr-od"
+value="${filtrOd}">
+
+</label>
+
+<label>
+
+Do
+
+<input
+type="date"
+id="filtr-do"
+value="${filtrDo}">
+
+</label>
 
 <select id="filtr-stacja">
 
@@ -146,6 +220,12 @@ ${k}
   html += `
 </select>
 
+<div style="flex:1"></div>
+
+<button id="pomiary-export">
+📥 Excel
+</button>
+
 </div>
 
 <table class="measure-table">
@@ -171,11 +251,8 @@ ${k}
 <tbody>
 `;
 
-  pomiary
-    .filter((p) => !filtrStacja || p.stacja_nazwa === filtrStacja)
-    .filter((p) => !filtrKomin || p.komin_nazwa === filtrKomin)
-    .forEach((p) => {
-      html += `
+  pobierzListeFiltrowana().forEach((p) => {
+    html += `
 
 <tr>
 
@@ -200,7 +277,7 @@ ${k}
 </tr>
 
 `;
-    });
+  });
 
   html += `
 </tbody>
@@ -212,9 +289,31 @@ ${k}
 
   view.innerHTML = html;
 
+  document.getElementById("filtr-od").addEventListener("change", (e) => {
+    filtrOd = e.target.value;
+    render();
+  });
+
+  document.getElementById("filtr-do").addEventListener("change", (e) => {
+    filtrDo = e.target.value;
+    render();
+  });
+
   document.getElementById("filtr-stacja").addEventListener("change", (e) => {
     filtrStacja = e.target.value;
-    filtrKomin = "";
+
+    const kominyDlaStacji = [
+      ...new Set(
+        pomiary
+          .filter((p) => !filtrStacja || p.stacja_nazwa === filtrStacja)
+          .map((p) => p.komin_nazwa),
+      ),
+    ];
+
+    if (!kominyDlaStacji.includes(filtrKomin)) {
+      filtrKomin = "";
+    }
+
     render();
   });
 
@@ -222,4 +321,8 @@ ${k}
     filtrKomin = e.target.value;
     render();
   });
+
+  document
+    .getElementById("pomiary-export")
+    .addEventListener("click", eksportExcel);
 }
