@@ -41,7 +41,7 @@ function odswiezKafelek() {
     </div>
 
     <div class="tile-state">
-      🔴 OFFLINE
+      🟢 ONLINE 
     </div>
   `;
 }
@@ -73,6 +73,33 @@ function render() {
 
 <div class="pump-container">
 
+
+<div class="pump-card">
+
+        <div class="pump-header">
+
+            <div class="pump-title">
+                Surowy
+            </div>
+
+        </div>
+
+        <div class="pump-grid">
+
+<div class="pump-label">Przewodność</div>
+    <div class="pump-value">${Number(dane.NIRZA13021).toFixed(0)} mS/cm</div>
+
+<div class="pump-label">Ciśnienie 13021</div>
+<div class="pump-value">${Number(dane.PIRZA13021).toFixed(2).replace(".", ",")} bar</div>
+
+    <div class="pump-label">Filtr żwirowy ΔP</div>
+    <div class="pump-value">${Number(dane["DP SFB"]).toFixed(2)} mbar</div>
+
+
+</div>
+
+    </div>
+
     <div class="pump-card">
 
         <div class="pump-header">
@@ -96,6 +123,9 @@ function render() {
 
     <div class="pump-label">ΔP</div>
     <div class="pump-value">${Number(dane.DP).toFixed(2)} bar</div>
+
+    <div class="pump-label">CIP</div>
+    <div class="pump-value">${Number(dane.CIP11).toFixed(0)} h</div>
 
 </div>
 
@@ -121,6 +151,10 @@ function render() {
 
     <div class="pump-label">Przewodność</div>
     <div class="pump-value">${Number(dane.NIRZA28021).toFixed(0)} µS/cm</div>
+
+    <div class="pump-label">CIP</div>
+    <div class="pump-value">${Number(dane.CIP12).toFixed(0)} h</div>
+
 
 </div>
 
