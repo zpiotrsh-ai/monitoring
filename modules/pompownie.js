@@ -215,6 +215,9 @@ Historia licznika przepływu
 
 <div class="pump-grid">
 
+<div class="pump-label">Odczyt</div>
+    <div class="pump-value">${data}</div>
+
     <div class="pump-label">Tryb AUTO</div>
     <div class="pump-value">${p.dane.auto ? "TAK" : "NIE"}</div>
 
@@ -233,8 +236,7 @@ Historia licznika przepływu
     }
 
     html += `
-    <div class="pump-label">Odczyt</div>
-    <div class="pump-value">${data}</div>
+    
 
 </div>
 

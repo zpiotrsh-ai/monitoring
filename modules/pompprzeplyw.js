@@ -90,6 +90,18 @@ Brak danych.
 
   const srednia = suma / dni;
 
+  const dobowe = obliczDobowePrzeplywy(lista);
+
+  const values = Object.values(dobowe);
+
+  const minDobowy = values.length ? Math.min(...values) : 0;
+
+  const maxDobowy = values.length ? Math.max(...values) : 0;
+
+  const avgDobowy = values.length
+    ? values.reduce((a, b) => a + b, 0) / values.length
+    : 0;
+
   let html = `
 <div class="panel">
 
@@ -133,7 +145,7 @@ value="${filtrDo}">
 
 <div>
 
-<span>Pierwszy</span>
+<span>Pierwszy:</span>
 
 <b>${pierwszy.toLocaleString("pl-PL")} m³</b>
 
@@ -141,7 +153,7 @@ value="${filtrDo}">
 
 <div>
 
-<span>Ostatni</span>
+<span>Ostatni:</span>
 
 <b>${ostatni.toLocaleString("pl-PL")} m³</b>
 
@@ -149,7 +161,7 @@ value="${filtrDo}">
 
 <div>
 
-<span>Przepływ</span>
+<span>Przepływ:</span>
 
 <b>${suma.toLocaleString("pl-PL")} m³</b>
 
@@ -157,9 +169,25 @@ value="${filtrDo}">
 
 <div>
 
-<span>Średnio / dzień</span>
+<span>Średnio/dzień:</span>
 
-<b>${srednia.toFixed(1)} m³</b>
+<b>${avgDobowy.toFixed(1)} m³</b>
+
+</div>
+
+<div>
+
+<span>Minimum:</span>
+
+<b>${minDobowy.toLocaleString("pl-PL")} m³</b>
+
+</div>
+
+<div>
+
+<span>Maksimum:</span>
+
+<b>${maxDobowy.toLocaleString("pl-PL")} m³</b>
 
 </div>
 
@@ -269,8 +297,98 @@ ${p.uwagi ?? "—"}
     .addEventListener("click", eksportExcel);
 }
 
+/* ===================================
+   Dobowe przepływy (ważone czasem)
+=================================== */
+
+function obliczDobowePrzeplywy(lista) {
+  const dni = {};
+
+  if (!lista || lista.length < 2) return dni;
+
+  for (let i = 0; i < lista.length - 1; i++) {
+    const a = lista[i];
+    const b = lista[i + 1];
+
+    const start =
+      typeof a.data?.toDate === "function" ? a.data.toDate() : new Date(a.data);
+
+    const stop =
+      typeof b.data?.toDate === "function" ? b.data.toDate() : new Date(b.data);
+
+    const deltaFlow = Number(b.flow) - Number(a.flow);
+
+    const deltaMs = stop - start;
+
+    if (deltaMs <= 0) continue;
+
+    const flowPerMs = deltaFlow / deltaMs;
+
+    let aktualny = new Date(start);
+
+    while (aktualny < stop) {
+      const koniecDoby = new Date(aktualny);
+
+      koniecDoby.setHours(24, 0, 0, 0);
+
+      const fragmentStop = koniecDoby < stop ? koniecDoby : stop;
+
+      const fragmentMs = fragmentStop - aktualny;
+
+      const fragmentFlow = flowPerMs * fragmentMs;
+
+      const klucz =
+        aktualny.getFullYear() +
+        "-" +
+        String(aktualny.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(aktualny.getDate()).padStart(2, "0");
+
+      dni[klucz] = (dni[klucz] || 0) + fragmentFlow;
+
+      aktualny = fragmentStop;
+    }
+  }
+
+  // usunięcie pierwszej i ostatniej niepełnej doby
+
+  const daty = Object.keys(dni).sort();
+
+  if (daty.length > 2) {
+    delete dni[daty[0]];
+    delete dni[daty[daty.length - 1]];
+  }
+
+  Object.keys(dni).forEach((d) => {
+    dni[d] = Math.round(dni[d]);
+  });
+
+  return dni;
+}
+
+/* ===================================
+   Średnia krocząca
+=================================== */
+
+function sredniaKroczaca(values, okno = 7) {
+  const wynik = [];
+
+  for (let i = 0; i < values.length; i++) {
+    const start = Math.max(0, i - okno + 1);
+
+    let suma = 0;
+
+    for (let j = start; j <= i; j++) {
+      suma += values[j];
+    }
+
+    wynik.push(Math.round(suma / (i - start + 1)));
+  }
+
+  return wynik;
+}
+
 function rysujWykres(lista) {
-  console.log(window.flowChart);
   const canvas = document.getElementById("flowChart");
 
   if (!canvas) return;
@@ -279,42 +397,70 @@ function rysujWykres(lista) {
     window.flowChart.destroy();
   }
 
-  const labels = [];
-  const values = [];
+  const dobowe = obliczDobowePrzeplywy(lista);
 
-  // przyrost pomiędzy kolejnymi odczytami
-  for (let i = 1; i < lista.length; i++) {
-    const poprzedni = Number(lista[i - 1].flow);
-    const aktualny = Number(lista[i].flow);
+  const labels = Object.keys(dobowe).map((d) => {
+    const [r, m, dz] = d.split("-");
+    return `${dz}.${m}`;
+  });
 
-    const d =
-      typeof lista[i].data?.toDate === "function"
-        ? lista[i].data.toDate()
-        : new Date(lista[i].data);
+  const values = Object.values(dobowe);
 
-    labels.push(
-      d.toLocaleDateString("pl-PL") +
-        " " +
-        d.toLocaleTimeString("pl-PL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-    );
+  const avg7 = sredniaKroczaca(values, 7);
 
-    values.push(aktualny - poprzedni);
-  }
+  const sredniaOkresu = values.reduce((suma, v) => suma + v, 0) / values.length;
+
+  const avgAll = values.map(() => sredniaOkresu);
 
   window.flowChart = new Chart(canvas, {
-    type: "bar",
-
     data: {
       labels,
 
       datasets: [
         {
-          label: "Przyrost",
+          type: "bar",
+          label: "Dobowy przepływ",
 
           data: values,
+
+          order: 2,
+        },
+
+        {
+          type: "line",
+          label: "Średnia 7 dni",
+
+          data: avg7,
+
+          tension: 0.3,
+
+          pointRadius: 0,
+
+          borderWidth: 2,
+
+          fill: false,
+
+          order: 1,
+        },
+
+        {
+          type: "line",
+
+          label: "Średnia okresu",
+
+          data: avgAll,
+
+          borderDash: [8, 6],
+
+          pointRadius: 0,
+
+          borderWidth: 2,
+
+          tension: 0,
+
+          fill: false,
+
+          order: 0,
         },
       ],
     },
@@ -324,15 +470,26 @@ function rysujWykres(lista) {
 
       maintainAspectRatio: false,
 
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+
       plugins: {
         legend: {
-          display: false,
+          display: true,
         },
 
         tooltip: {
           callbacks: {
-            label: (ctx) =>
-              "+" + Number(ctx.raw).toLocaleString("pl-PL") + " m³",
+            label(ctx) {
+              return (
+                ctx.dataset.label +
+                ": " +
+                Number(ctx.raw).toLocaleString("pl-PL") +
+                " m³"
+              );
+            },
           },
         },
       },
@@ -340,8 +497,7 @@ function rysujWykres(lista) {
       scales: {
         x: {
           ticks: {
-            maxRotation: 90,
-            minRotation: 45,
+            maxRotation: 0,
           },
         },
 
@@ -351,7 +507,7 @@ function rysujWykres(lista) {
           title: {
             display: true,
 
-            text: "Przyrost [m³]",
+            text: "m³ / dobę",
           },
         },
       },

@@ -86,7 +86,7 @@ function render() {
   }
 
   view.innerHTML = `
-<div class="panel">
+<div class="panel panel-half">
 
 <h2>🔥 Pochodnia</h2>
 
